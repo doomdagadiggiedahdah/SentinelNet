@@ -3,11 +3,15 @@ set -e
 
 echo "Initializing SentinelNet backend..."
 
+# Ensure database directory exists
+mkdir -p /app/backend/data
+chmod 755 /app/backend/data
+
 # Initialize database
 echo "Setting up database..."
 python -c "from backend.db.session import init_db; init_db()"
 
-# Seed database with demo data
+# Seed database with demo data  
 echo "Seeding database with demo organizations..."
 python -m backend.db.seed
 

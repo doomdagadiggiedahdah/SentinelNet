@@ -10,11 +10,10 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite:///./backend/db.sqlite3
+      - DATABASE_URL=sqlite:////app/backend/data/db.sqlite3
       - PYTHONUNBUFFERED=1
     volumes:
       - ./backend/data:/app/backend/data
-      - ./backend/db.sqlite3:/app/backend/db.sqlite3
     networks:
       - sentinelnet
     healthcheck:

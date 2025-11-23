@@ -23,7 +23,15 @@ if ! command -v docker-compose &> /dev/null; then
 fi
 
 echo -e "${YELLOW}ℹ️  Checking Docker daemon...${NC}"
-if ! docker ps > /dev/null 2>&1; then
+# Try without sudo first, then with sudo
+if docker ps > /dev/null 2>&1; then
+    DOCKER_CMD="docker"
+    DC_CMD="docker-compose"
+elif sudo docker ps > /dev/null 2>&1; then
+    DOCKER_CMD="sudo docker"
+    DC_CMD="sudo docker-compose"
+    echo -e "${YELLOW}⚠️  Running with sudo (user not in docker group)${NC}"
+else
     echo -e "${RED}❌ Docker daemon is not running. Please start Docker first.${NC}"
     exit 1
 fi
@@ -35,13 +43,13 @@ COMMAND=${1:-up}
 case $COMMAND in
     up)
         echo -e "${YELLOW}🚀 Starting SentinelNet...${NC}\n"
-        docker-compose up -d
+        $DC_CMD up -d
         
         echo -e "\n${YELLOW}⏳ Waiting for services to be healthy...${NC}"
         sleep 10
         
         # Check if services are running
-        if docker-compose ps | grep -q "healthy"; then
+        if $DC_CMD ps | grep -q "healthy"; then
             echo -e "${GREEN}✓ Backend is healthy${NC}"
         fi
         
@@ -61,47 +69,47 @@ case $COMMAND in
         
     down)
         echo -e "${YELLOW}🛑 Stopping SentinelNet...${NC}"
-        docker-compose down
+        $DC_CMD down
         echo -e "${GREEN}✓ Services stopped${NC}\n"
         ;;
         
     logs)
         echo -e "${YELLOW}📋 Showing logs...${NC}\n"
-        docker-compose logs -f
+        $DC_CMD logs -f
         ;;
         
     ps)
         echo -e "${YELLOW}📊 Service Status:${NC}\n"
-        docker-compose ps
+        $DC_CMD ps
         ;;
         
     build)
         echo -e "${YELLOW}🏗️  Building images...${NC}\n"
-        docker-compose build
+        $DC_CMD build
         echo -e "${GREEN}✓ Build complete${NC}\n"
         ;;
         
     rebuild)
         echo -e "${YELLOW}🔨 Rebuilding and starting services...${NC}\n"
-        docker-compose up -d --build
+        $DC_CMD up -d --build
         echo -e "${GREEN}✓ Services rebuilt and started${NC}\n"
         ;;
         
     clean)
         echo -e "${YELLOW}🧹 Cleaning up...${NC}"
-        docker-compose down -v
+        $DC_CMD down -v
         echo -e "${GREEN}✓ All services and volumes removed${NC}\n"
         ;;
         
     restart)
         echo -e "${YELLOW}🔄 Restarting services...${NC}"
-        docker-compose restart
+        $DC_CMD restart
         echo -e "${GREEN}✓ Services restarted${NC}\n"
         ;;
         
     test)
         echo -e "${YELLOW}🧪 Running backend tests...${NC}\n"
-        docker-compose exec backend pytest backend/tests/ -v
+        $DC_CMD exec backend pytest backend/tests/ -v
         ;;
         
     *)
