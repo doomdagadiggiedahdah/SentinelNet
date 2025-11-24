@@ -24,6 +24,7 @@ WORKDIR /app
 
 # Install serve to run the production build
 RUN npm install -g serve
+RUN apk add --no-cache curl
 
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist

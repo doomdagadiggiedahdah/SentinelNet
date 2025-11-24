@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { apiClient } from '../api/client';
-import { useOrg } from '../context/OrgContext';
 
 interface Vulnerability {
   name: string;
@@ -25,18 +24,16 @@ interface ThreatResearchReport {
 }
 
 export function ThreatResearch() {
-  const { orgId } = useOrg();
   const [description, setDescription] = useState('');
   const [selectedVuln, setSelectedVuln] = useState<Vulnerability | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [scanReport, setScanReport] = useState<ThreatResearchReport | null>(null);
 
   const scanMutation = useMutation({
     mutationFn: async (desc: string) => {
-      const res = await apiClient.post('/threat-research/scan', {
+      const res = await apiClient.post<ThreatResearchReport>('/threat-research/scan', {
         org_description: desc,
       });
-      return res.data;
+      return res;
     },
     onSuccess: (data) => {
       setScanReport(data);

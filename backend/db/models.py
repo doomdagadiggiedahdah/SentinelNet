@@ -145,7 +145,7 @@ class PreventivePlaybook(Base):
     attack_vector = Column(String, nullable=False)
     playbook_sections = Column(JSON, nullable=False, default=dict)
     full_text = Column(Text, nullable=True)
-    metadata = Column(JSON, nullable=True)
+    playbook_metadata = Column(JSON, nullable=True)
     generated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 

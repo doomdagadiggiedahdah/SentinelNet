@@ -38,7 +38,7 @@ interface RiskAssessment {
 
 export function RiskAssessment() {
   const { orgId } = useOrg();
-  const [showProfileForm, setShowProfileForm] = useState(false);
+  
   const [selectedThreat, setSelectedThreat] = useState<ThreatCard | null>(null);
   const [profileData, setProfileData] = useState<ProfileData>({});
 
@@ -51,8 +51,8 @@ export function RiskAssessment() {
   } = useQuery<RiskAssessment>({
     queryKey: ['risk-assessment', orgId],
     queryFn: async () => {
-      const res = await apiClient.get('/risk-assessment/');
-      return res.data;
+      const res = await apiClient.get<RiskAssessment>('/risk-assessment/');
+      return res;
     },
     retry: false,
   });
@@ -60,11 +60,10 @@ export function RiskAssessment() {
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileData) => {
-      const res = await apiClient.post('/risk-assessment/profile', data);
-      return res.data;
+      const res = await apiClient.post<RiskAssessment>('/risk-assessment/profile', data);
+      return res;
     },
     onSuccess: () => {
-      setShowProfileForm(false);
       setProfileData({});
       refetch();
     },
@@ -73,11 +72,11 @@ export function RiskAssessment() {
   // Generate playbook mutation
   const generatePlaybookMutation = useMutation({
     mutationFn: async (threat: ThreatCard) => {
-      const res = await apiClient.post('/risk-assessment/playbook', {
+      const res = await apiClient.post<any>('/risk-assessment/playbook', {
         threat_id: threat.threat_id,
         attack_vector: threat.attack_vector,
       });
-      return res.data;
+      return res;
     },
   });
 

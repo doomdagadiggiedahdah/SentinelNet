@@ -55,3 +55,5 @@ export class ApiClient {
     return this.request<T>(endpoint, { method: 'DELETE' });
   }
 }
+
+export const apiClient = new ApiClient(import.meta.env.VITE_API_KEY || 'demo-key');
