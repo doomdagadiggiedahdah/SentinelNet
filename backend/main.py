@@ -18,6 +18,10 @@ app.add_middleware(
         "http://localhost:3000",   # Frontend Docker container
         "http://localhost:3165",   # Frontend Docker mapped port
         "http://frontend:3000",    # Frontend service name in Docker network
+        "http://sentinelwatch.xyz",
+        "https://sentinelwatch.xyz",
+        "http://www.sentinelwatch.xyz",
+        "https://www.sentinelwatch.xyz",
     ],
     allow_credentials=True,
     allow_methods=["*"],

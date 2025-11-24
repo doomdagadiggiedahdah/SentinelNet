@@ -186,7 +186,7 @@ npm test
 - **Dependencies:** Waits for backend to be healthy before starting
 - **Health Check:** HTTP GET to internal port 3000
 
-Both services run on a `sentinelnet` bridge network and restart automatically unless stopped.
+Both services run on a `sentinelwatch` bridge network and restart automatically unless stopped.
 
 ## Privacy Mechanisms
 

@@ -1,5 +1,5 @@
 # Build stage for frontend
-FROM node:20-alpine as builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -12,7 +12,9 @@ RUN npm ci
 # Copy source code
 COPY frontend/ .
 
-# Build the application
+# Build the application with API base URL
+ARG VITE_API_BASE_URL=/api
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 RUN npm run build
 
 # Runtime stage
@@ -36,9 +38,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 # Expose port
 EXPOSE 3000
-
-# Environment variable for API base URL (can be overridden at runtime)
-ENV VITE_API_BASE_URL=http://localhost:8000
 
 # Run the application
 CMD ["serve", "-s", "dist", "-l", "3000"]

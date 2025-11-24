@@ -1,57 +1,63 @@
-version: '3.9'
-
+networks:
+  sentinelwatch:
+    driver: bridge
 services:
-  # Backend API service
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    container_name: sentinelnet-backend
-    ports:
-      - "8000:8000"
+    container_name: sentinelwatch-backend
     environment:
-      - DATABASE_URL=sqlite:////app/backend/data/db.sqlite3
-      - PYTHONUNBUFFERED=1
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-    volumes:
-      - ./backend/data:/app/backend/data
-    networks:
-      - sentinelnet
+    - DATABASE_URL=sqlite:////app/backend/data/db.sqlite3
+    - PYTHONUNBUFFERED=1
+    - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
-      timeout: 10s
       retries: 3
       start_period: 5s
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8000/health
+      timeout: 10s
+    networks:
+    - sentinelwatch
+    ports:
+    - 8000:8000
     restart: unless-stopped
-
-  # Frontend service
+    volumes:
+    - ./backend/data:/app/backend/data
   frontend:
     build:
+      args:
+        VITE_API_BASE_URL: /api
       context: .
       dockerfile: frontend/Dockerfile
-    container_name: sentinelnet-frontend
-    ports:
-      - "3165:3000"
-    environment:
-      - VITE_API_BASE_URL=http://localhost:8000
+    container_name: sentinelwatch-frontend
     depends_on:
       backend:
         condition: service_healthy
-    networks:
-      - sentinelnet
+    environment:
+    - VITE_API_BASE_URL=/api
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
-      timeout: 10s
       retries: 3
       start_period: 10s
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:3000
+      timeout: 10s
+    networks:
+    - sentinelwatch
+    ports:
+    - 3165:3000
     restart: unless-stopped
-
-networks:
-  sentinelnet:
-    driver: bridge
-
+version: '3.9'
 volumes:
   backend_data:
     driver: local
